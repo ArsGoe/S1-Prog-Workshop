@@ -79,19 +79,6 @@ void buzz_cut(){
     image.save("output/pouet.png");
 }
 
-void mirror(){
-    sil::Image image{"images/logo.png"};
-    sil::Image mirror_image = sil::Image(image.width(), image.height());
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            mirror_image.pixel(image.width() - i - 1, j) = image.pixel(i, j);
-        }
-        
-    }
-    mirror_image.save("output/pouet.png");
-}
 
 void noising() {
     sil::Image image{"images/logo.png"};
@@ -398,6 +385,100 @@ void mosaimac() {
         }
         
     }
+    mosaic_image.save("output/pouet.png");
+}
+
+sil::Image mirror(sil::Image& image){
+    sil::Image mirror_image = sil::Image(image.width(), image.height());
+    for (float i{0}; i < image.width(); i++)
+    {
+        for (float j{0}; j < image.height(); j++)
+        {
+            mirror_image.pixel(image.width() - i - 1, j) = image.pixel(i, j);
+        }
+        
+    }
+    return mirror_image;
+}
+
+
+sil::Image upside_down(sil::Image& image) {
+    sil::Image upside_down_image = sil::Image(image.width(), image.height());
+    for (float i{0}; i < image.width(); i++)
+    {
+        for (float j{0}; j < image.height(); j++)
+        {
+            upside_down_image.pixel(i, image.height() - j - 1) = image.pixel(i, j);
+        }
+        
+    }
+    return upside_down_image;
+}
+
+void mirrored_mosaimac() {
+    sil::Image image{"images/logo.png"};
+    sil::Image mirror_image = mirror(image);
+    sil::Image upside_down_image = upside_down(image);
+    sil::Image upside_down_mirror_image = upside_down(mirror_image);
+    sil::Image mosaic_image = sil::Image(image.width() * 5, image.height() * 5);
+    for (float i{0}; i < image.width(); i++)
+    {
+        for (float j{0}; j < image.height(); j++)
+        {
+            for (int k{0}; k < 5; k++)
+            {
+                for (int l{0}; l < 5; l++)
+                {
+                    if ( l % 2 == 0) {
+                        if ( k % 2 == 0)
+                        {
+                            mosaic_image.pixel(i + image.width() * k, j + image.height() * l) = image.pixel(i, j);
+                        }
+                        else {
+                            mosaic_image.pixel(i + image.width() * k, j + image.height() * l) = mirror_image.pixel(i, j);
+                        }
+                    } else {
+                        if ( k % 2 == 0)
+                        {
+                            mosaic_image.pixel(i + image.width() * k, j + image.height() * l) = upside_down_image.pixel(i, j);
+                        }
+                        else {
+                            mosaic_image.pixel(i + image.width() * k, j + image.height() * l) = upside_down_mirror_image.pixel(i, j);
+                        }
+                    }
+                }
+            }   
+        }
+    }
+    mosaic_image.save("output/pouet.png");
+}
+
+void glitch() {
+    sil::Image image{"images/logo.png"};
+    int number = rand() % 30 + 15;
+    std::cout << number << std::endl;
+    for (int i = 0; i < number; i++)
+    {
+        std::cout << i << std::endl;
+        int size_x = rand() % 30 + 5;
+        int size_y = rand() % 30 + 5;
+
+        int x1 = rand() % (image.width() - size_x);
+        int y1 = rand() % (image.width() - size_y);
+        int x2 = rand() % (image.width() - size_x);
+        int y2 = rand() % (image.width() - size_y);
+
+        for (int x = 0; x < size_x; x++)
+        {
+            for (int y = 0; y < size_y; y++)
+            {
+                glm::vec3 tmp_pixel = image.pixel(x2 + x, y2 + y);
+                image.pixel(x2 + x, y2 + y) = image.pixel(x1 + x, y1 + y);
+                image.pixel(x1 + x, y1 + y) = tmp_pixel;
+            }
+        }
+    }
+    image.save("output/pouet.png");
 }
 
 int main()
