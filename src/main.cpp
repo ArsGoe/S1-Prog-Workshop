@@ -203,13 +203,12 @@ void disc() {
     image.save("output/pouet.png");
 }
 
-void ring() {
-    sil::Image image{500, 500};
+void ring(int center_x, int center_y, int rayon, sil::Image& image) {
     for (float i{0}; i < image.width(); i++)
     {
         for (float j{0}; j < image.height(); j++)
         {
-            if (pow(i-250, 2) + pow(j - 250, 2) < pow(100, 2) && pow(i-250, 2) + pow(j - 250, 2) > pow(90, 2))
+            if (pow(i-center_x, 2) + pow(j - center_y, 2) < pow(rayon, 2) && pow(i-center_x, 2) + pow(j - center_y, 2) > pow(rayon - 5, 2))
             {
                 glm::vec3 &pixel = image.pixel(i, j);
                 pixel.r = 1;
@@ -220,7 +219,6 @@ void ring() {
         }
         
     }
-    image.save("output/pouet.png");
 }
 
 void animated_disc() {
@@ -369,7 +367,40 @@ void rosace() {
     image.save("output/pouet.png");
 }
 
+void polar_rosace() {
+    sil::Image image{500, 500};
+    int angle = 360 / 10;
+    for (int i = 0; i < 10; i++)
+    {
+        int true_angle = (angle * i);
+        int x = cos(true_angle * (M_PI / 180 )) * 100 + 250;
+        int y = sin(true_angle * (M_PI / 180 )) * 100 + 250;
+        ring(x, y, 100, image);
+    }
+    image.save("output/pouet.png");
+}
+
+void mosaimac() {
+    sil::Image image{"images/logo.png"};
+    sil::Image mosaic_image = sil::Image(image.width() * 5, image.height() * 5);
+    for (float i{0}; i < image.width(); i++)
+    {
+        for (float j{0}; j < image.height(); j++)
+        {
+            for (float k{0}; k < 5; k++)
+            {
+                for (float l{0}; l < 5; l++)
+                {
+                    mosaic_image.pixel(i + image.width() * k, j + image.height() * l) = image.pixel(i, j);
+                }
+                
+            }   
+        }
+        
+    }
+}
+
 int main()
 {
-    rosace();
+    polar_rosace();
 } 
