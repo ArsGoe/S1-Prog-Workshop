@@ -6,6 +6,7 @@
 #include <sil/sil.hpp>
 #include <cmath>
 #include <complex>
+#include <glm/gtx/matrix_transform_2d.hpp>
 
 void clean_image() {
     sil::Image image{"images/photo.jpg"};
@@ -1054,7 +1055,30 @@ void kuwahara(int kuwahara_size) {
     kuwahara_image.save("output/pouet.png");
 }
 
+glm::vec2 rotated(glm::vec2 point, glm::vec2 center_of_rotation, float angle)
+{
+    return glm::vec2{glm::rotate(glm::mat3{1.f}, angle) * glm::vec3{point - center_of_rotation, 0.f}} + center_of_rotation;
+}
+
+void vortex() {
+    sil::Image image{"images/logo.png"};
+    sil::Image vortexed_image = {image.width(), image.height()};
+    for (int x{0}; x < image.width(); x++)        
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            glm::vec2 positions = rotated({x, y}, {image.width() / 2, image.height() / 2}, -0.1 * glm::distance(glm::vec2{x, y}, glm::vec2{image.width() / 2, image.height() / 2}));
+            if (positions.x >= 0 && positions.x < image.width() && positions.y >= 0 && positions.y < image.height())
+            {
+                vortexed_image.pixel(x, y) = image.pixel(positions.x, positions.y);
+            }
+        }
+    }
+    vortexed_image.save("output/pouet.png");
+}
+
+
 int main()
 {
-    kuwahara(3);
+    vortex();
 } 
