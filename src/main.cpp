@@ -1,3 +1,5 @@
+#include "glm/geometric.hpp"
+#include "random.hpp"
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>
@@ -654,7 +656,405 @@ void color_buzz_cut() {
     image.save("output/pouet.png");
 }
 
+sil::Image basic_convolution(int blur_size) {
+    sil::Image image{"images/logo.png"};
+    sil::Image blurred_image = { image.width(), image.height()};
+    for (float x{0}; x < image.width(); x++)        
+    {
+        for (float y{0}; y < image.height(); y++)
+        { 
+            std::vector<glm::vec3> v;
+            for (int i = -1 * blur_size; i < blur_size + 1; i++)
+            {
+                for (int j = -1 * blur_size; j < blur_size + 1; j++)
+                {
+                    if (x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height())
+                    {
+                        v.push_back(image.pixel(x + i, y + j));
+                    }
+                    else{
+                        v.push_back(glm::vec3(0.));
+                    }
+                }
+            }
+            float sum_red = 0;
+            float sum_green = 0;
+            float sum_blue = 0;
+            for (glm::vec3 pixel : v)
+            {
+                sum_red = sum_red + pixel.r;
+                sum_green = sum_green + pixel.g;
+                sum_blue = sum_blue + pixel.b;
+            }
+            float moy_red = sum_red / v.size();
+            float moy_green = sum_green / v.size();
+            float moy_blue = sum_blue / v.size();
+            glm::vec3 newColor = {moy_red, moy_green, moy_blue};
+            blurred_image.pixel(x, y) = newColor;
+        }
+    }
+    return blurred_image;
+}
+
+void matrix_convolution() {
+    sil::Image image{"images/logo.png"};
+    sil::Image sharpened_image = { image.width(), image.height()};
+    int blur_size = 1;
+    std::vector<int> matrix = {
+        -2, -1, 0,
+        -1, 1, 1,
+        0, 1, 2};
+    for (float x{0}; x < image.width(); x++)        
+    {
+        for (float y{0}; y < image.height(); y++)
+        { 
+            std::vector<glm::vec3> v;
+            for (int i = -1 * blur_size; i < blur_size + 1; i++)
+            {
+                for (int j = -1 * blur_size; j < blur_size + 1; j++)
+                {
+                    if (x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height())
+                    {
+                        v.push_back(image.pixel(x + i, y + j));
+                    }
+                    else{
+                        v.push_back(glm::vec3(0.));
+                    }
+                }
+            }
+            float sum_red = 0;
+            float sum_green = 0;
+            float sum_blue = 0;
+            for (int i = 0; i < v.size(); i++)
+            {
+                sum_red = sum_red + v.at(i).r * matrix.at(i);
+                sum_green = sum_green + v.at(i).g * matrix.at(i);
+                sum_blue = sum_blue + v.at(i).b * matrix.at(i);
+            }
+            glm::vec3 newColor = {sum_red, sum_green, sum_blue};
+            sharpened_image.pixel(x, y) = newColor;
+        }
+    }
+    sharpened_image.save("output/pouet.png");
+}
+
+
+sil::Image box_blur_convolution(int blur_size) {
+    sil::Image image{"images/logo.png"};
+    sil::Image tmp_image = { image.width(), image.height()};
+    sil::Image final_image = { image.width(), image.height()};
+    for (float x{0}; x < image.width(); x++)        
+    {
+        for (float y{0}; y < image.height(); y++)
+        { 
+            std::vector<glm::vec3> v;
+            float sum_red = 0;
+            float sum_green = 0;
+            float sum_blue = 0;
+            int compteur = 0;
+            for (int i = -1 * blur_size; i < blur_size + 1; i++)
+            {
+                if (x + i >= 0 && x + i < image.width())
+                {
+                    sum_red = sum_red + image.pixel(x + i, y).r;
+                    sum_green = sum_green + image.pixel(x + i, y).g;
+                    sum_blue = sum_blue + image.pixel(x + i, y).b;
+                }
+                else{
+                    sum_red = sum_red + 0;
+                    sum_green = sum_green + 0;
+                    sum_blue = sum_blue + 0;
+                }
+                compteur++;
+            }
+            glm::vec3 newColor = {sum_red / compteur, sum_green / compteur, sum_blue / compteur};
+            tmp_image.pixel(x, y) = newColor;
+        }
+    }
+
+    for (float x{0}; x < image.width(); x++)        
+    {
+        for (float y{0}; y < image.height(); y++)
+        { 
+            float sum_red = 0;
+            float sum_green = 0;
+            float sum_blue = 0;
+            int compteur = 0;
+            for (int i = -1 * blur_size; i < blur_size + 1; i++)
+            {
+                if (y + i >= 0 && y + i < image.height())
+                {
+                    sum_red = sum_red + tmp_image.pixel(x, y + i).r;
+                    sum_green = sum_green + tmp_image.pixel(x, y + i).g;
+                    sum_blue = sum_blue + tmp_image.pixel(x, y + i).b;
+                }
+                else{
+                    sum_red = sum_red + 0;
+                    sum_green = sum_green + 0;
+                    sum_blue = sum_blue + 0;
+                }
+                compteur++;
+            }
+            glm::vec3 newColor = {sum_red / compteur, sum_green / compteur, sum_blue / compteur};
+            final_image.pixel(x, y) = newColor;
+        }
+    }
+    return final_image;
+}
+
+void gauss_diff(){
+    sil::Image image{"images/logo.png"};
+    sil::Image image1 = basic_convolution(1);
+    sil::Image image2 = box_blur_convolution(3);
+
+    for (float x{0}; x < image1.width(); x++)        
+    {
+        for (float y{0}; y < image1.height(); y++)
+        { 
+            image.pixel(x, y) = image1.pixel(x, y) - image2.pixel(x, y);
+        }
+    }
+    image.save("output/pouet.png");
+}
+
+void normalize() {
+    sil::Image image{"images/photo_faible_contraste.jpg"};
+    glm::vec3 brightest = image.pixel(0,0);
+    glm::vec3 darkest = image.pixel(0,0);
+    for (glm::vec3 pixel : image.pixels())
+    {
+        if (pixel.r + pixel.g + pixel.b > brightest.r + brightest.g + brightest.b)
+        {
+            brightest = pixel;
+        } else if (pixel.r + pixel.g + pixel.b < darkest.r + darkest.g + darkest.b) {
+            darkest = pixel;
+        }
+    }
+    float moy_light = (brightest.r + brightest.g + brightest.b) / 3;
+    float moy_dark = (darkest.r + darkest.g + darkest.b) / 3;
+    for (float x{0}; x < image.width(); x++)        
+    {
+        for (float y{0}; y < image.height(); y++)
+        {
+                image.pixel(x,y).r = (image.pixel(x, y).r - moy_dark) / (moy_light - moy_dark) ;
+                image.pixel(x,y).g = (image.pixel(x, y).g - moy_dark) / (moy_light - moy_dark);
+                image.pixel(x,y).b = (image.pixel(x, y).b - moy_dark) / (moy_light - moy_dark);
+            
+        }
+    }
+    image.save("output/pouet.png");
+}
+
+void dithering() {
+    sil::Image image{"images/photo.jpg"};
+    const int bayer_n = 4;
+    float bayer_matrix_4x4[][bayer_n] = {
+        {   -0.5,       0,  -0.375,   0.125},
+        {   0.25,   -0.25,   0.375,  -0.125},
+        {-0.3125,  0.1875, -0.4375,  0.0625},
+        { 0.4375, -0.0625,  0.3125, -0.1875},
+    };
+    for (int x{0}; x < image.width(); x++)        
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            float color_base = (image.pixel(x, y).r + image.pixel(x, y).g + image.pixel(x, y).b) /3;
+            float bayer_value = bayer_matrix_4x4[y % bayer_n][x % bayer_n];
+            float output_color = color_base + bayer_value;
+            if (output_color > 0.5)
+            {
+                image.pixel(x, y) = glm::vec3{1.};
+            } else {
+                image.pixel(x, y) = glm::vec3{0.};
+            }
+            
+        }
+    }
+    image.save("output/pouet.png");
+}
+
+void k_means(int k){
+    sil::Image image{"images/photo.jpg"};
+    sil::Image k_proximity = {image.width(), image.height()};
+    glm::vec3 k_means[k];
+    for (int i = 0; i < k; i++)
+    {
+        float random_r = random_float(0, 1);
+        float random_g = random_float(0, 1);
+        float random_b = random_float(0, 1);
+        k_means[i] = glm::vec3{random_r, random_g, random_b};
+    }
+    for (int j = 0; j < 10; j++)
+    {
+        for (int x{0}; x < image.width(); x++)        
+        {
+            for (int y{0}; y < image.height(); y++)
+            {
+                glm::vec3 closest = k_means[0];
+                float closest_mean = 10.0;
+                for (glm::vec3 color : k_means) {
+                    float dist = glm::distance(color, image.pixel(x, y));
+                    if(dist < closest_mean) {
+                        closest = color;
+                        closest_mean = dist;
+                    }
+                }
+                k_proximity.pixel(x, y) = closest; 
+            }
+        }
+
+    // k_proximity.save("output/pouet.png");
+
+        for (int i = 0; i < k; i++)
+        {
+            float new_k_red = 0;
+            float new_k_green = 0;
+            float new_k_blue = 0;
+            int compteur = 0;
+            for (int x{0}; x < image.width(); x++)        
+            {
+                for (int y{0}; y < image.height(); y++)
+                {
+                    if (k_proximity.pixel(x, y) == k_means[i])
+                    {
+                        new_k_red = new_k_red + image.pixel(x, y).r;
+                        new_k_green = new_k_green + image.pixel(x, y).g;
+                        new_k_blue = new_k_blue + image.pixel(x, y).b;
+                        compteur++;
+                    }
+                    
+                }
+            }
+            k_means[i] = glm::vec3{new_k_red / compteur, new_k_green/ compteur, new_k_blue/ compteur};
+        }
+    }
+    
+    for (int x{0}; x < image.width(); x++)        
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            image.pixel(x, y) = k_proximity.pixel(x, y);                
+        }
+    }
+    image.save("output/pouet.png");
+}
+
+double standardDeviation(const std::vector<glm::vec3>& arr)
+{
+    glm::vec3 mean, sum = {0, 0, 0};
+    float standardDeviation = 0.0;
+
+    int size = arr.size();
+
+    // Calculate the sum of elements in the vector
+    for (int i = 0; i < size; ++i) {
+        sum += arr[i];
+    }
+
+    // Calculate the mean
+    mean.r = sum.r / size;
+    mean.g = sum.g / size;
+    mean.b = sum.b / size;
+
+    // Calculate the sum of squared differences from the
+    // mean
+    for (int i = 0; i < size; ++i) {
+        standardDeviation += pow(glm::distance(arr[i], mean), 2);
+    }
+
+    // Calculate the square root of the variance to get the
+    // standard deviation
+    return sqrt(standardDeviation / size);
+}
+
+void kuwahara(int kuwahara_size) {
+    sil::Image image{"images/photo.jpg"};
+    sil::Image kuwahara_image = {image.width(), image.height()};
+    for (int x{0}; x < image.width(); x++)        
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            std::vector<glm::vec3> up_left;
+            std::vector<glm::vec3> up_righ;
+            std::vector<glm::vec3> down_left;
+            std::vector<glm::vec3> down_right;
+            float up_left_number = 0;
+            float up_righ_number = 0;
+            float down_left_number = 0;
+            float down_right_number = 0;
+            for (int i = -1 * kuwahara_size; i < kuwahara_size + 1; i++)
+            {
+                for (int j = -1 * kuwahara_size; j < kuwahara_size + 1; j++)
+                {
+                    if ( i < 0 && j < 0 && x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height())
+                    {
+                        up_left.push_back(image.pixel(x + i, y + j));
+                        up_left_number++;
+                    } else if (i < 0 && j > 0 && x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height()) {
+                        up_righ.push_back(image.pixel(x + i, y + j));
+                        up_righ_number++;
+                    } else if (i > 0 && j > 0 && x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height()) {
+                        down_left.push_back(image.pixel(x + i, y + j));
+                        down_left_number++;
+                    } else if (i > 0 && j < 0 && x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height()) {
+                        down_right.push_back(image.pixel(x + i, y + j));
+                        down_right_number++;
+                    }
+                }
+            }
+
+            if (standardDeviation(up_left) < standardDeviation(up_righ) 
+        && standardDeviation(up_left) < standardDeviation(down_left)
+        && standardDeviation(up_left) < standardDeviation(down_right))
+            {
+                glm::vec3 moyenne = {0, 0, 0};
+                for(glm::vec3 v : up_left) {
+                    moyenne = moyenne + v;
+                }
+                moyenne.r = moyenne.r / up_left.size();
+                moyenne.g = moyenne.g / up_left.size();
+                moyenne.b = moyenne.b / up_left.size();
+                kuwahara_image.pixel(x, y) = moyenne;
+            } else if (standardDeviation(up_righ) < standardDeviation(up_left) 
+        && standardDeviation(up_righ) < standardDeviation(down_left)
+        && standardDeviation(up_righ) < standardDeviation(down_right))
+            {
+                glm::vec3 moyenne = {0, 0, 0};
+                for(glm::vec3 v : up_righ) {
+                    moyenne = moyenne + v;
+                }
+                moyenne.r = moyenne.r / up_righ.size();
+                moyenne.g = moyenne.g / up_righ.size();
+                moyenne.b = moyenne.b / up_righ.size();
+                kuwahara_image.pixel(x, y) = moyenne;
+            } else if (standardDeviation(down_left) < standardDeviation(up_righ) 
+        && standardDeviation(down_left) < standardDeviation(up_left)
+        && standardDeviation(down_left) < standardDeviation(down_right))
+            {
+                glm::vec3 moyenne = {0, 0, 0};
+                for(glm::vec3 v : down_left) {
+                    moyenne = moyenne + v;
+                }
+                moyenne.r = moyenne.r / down_left.size();
+                moyenne.g = moyenne.g / down_left.size();
+                moyenne.b = moyenne.b / down_left.size();
+                kuwahara_image.pixel(x, y) = moyenne;
+            } else {
+                glm::vec3 moyenne = {0, 0, 0};
+                for(glm::vec3 v : down_right) {
+                    moyenne = moyenne + v;
+                }
+                moyenne.r = moyenne.r / down_right.size();
+                moyenne.g = moyenne.g / down_right.size();
+                moyenne.b = moyenne.b / down_right.size();
+                kuwahara_image.pixel(x, y) = moyenne;
+            }
+        }
+    }
+    kuwahara_image.save("output/pouet.png");
+}
+
 int main()
 {
-    mandelbrot();
+    kuwahara(3);
 } 
