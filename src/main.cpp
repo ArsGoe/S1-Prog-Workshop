@@ -2,6 +2,7 @@
 #include "random.hpp"
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include <cstdlib>
 #include <sil/sil.hpp>
 #include <cmath>
@@ -14,7 +15,7 @@ void clean_image() {
     image.save("output/pouet.png");
 }
 
-
+// Done
 void make_green() {
     sil::Image image{"images/logo.png"};
     for ( glm::vec3 &pixel : image.pixels())
@@ -23,9 +24,10 @@ void make_green() {
         pixel.b = 0;
     }
     
-    image.save("output/pouet.png");
+    image.save("output/green.png");
 }
 
+// Done
 void shuffle_channels() {
     sil::Image image{"images/logo.png"};
     for ( glm::vec3 &pixel : image.pixels())
@@ -37,9 +39,10 @@ void shuffle_channels() {
         pixel.b = tmp_g;
     }
     
-    image.save("output/pouet.png");
+    image.save("output/shuffle.png");
 }
 
+// Done
 void to_black_and_white(){
     sil::Image image{"images/logo.png"};
     for ( glm::vec3 &pixel : image.pixels())
@@ -50,9 +53,10 @@ void to_black_and_white(){
         pixel.g = moy;
     }
     
-    image.save("output/pouet.png");
+    image.save("output/black_and_white.png");
 }
 
+// Done
 void to_negative(){
     sil::Image image{"images/logo.png"};
     for ( glm::vec3 &pixel : image.pixels())
@@ -62,9 +66,10 @@ void to_negative(){
         pixel.g = 1 - pixel.g;
     }
     
-    image.save("output/pouet.png");
+    image.save("output/negative.png");
 }
 
+// Done
 void buzz_cut(){
     sil::Image image{"images/logo.png"};
     for (float i{0}; i < image.width(); i++)
@@ -81,10 +86,10 @@ void buzz_cut(){
     }
     
     
-    image.save("output/pouet.png");
+    image.save("output/buzz_cut.png");
 }
 
-
+// Done
 void noising() {
     sil::Image image{"images/logo.png"};
     for (float i{0}; i < image.width(); i++)
@@ -107,9 +112,10 @@ void noising() {
         }
         
     }
-    image.save("output/pouet.png");
+    image.save("output/noise.png");
 }
 
+// Done
 void rotate_image() {
     sil::Image image{"images/logo.png"};
     sil::Image rotated_image = sil::Image(image.height(), image.width());
@@ -122,9 +128,10 @@ void rotate_image() {
     }
 
     
-    rotated_image.save("output/pouet.png");
+    rotated_image.save("output/rotate.png");
 }
 
+// Done
 void rgb_split() {
     sil::Image image{"images/logo.png"};
     sil::Image split_rgb_image = sil::Image(image.width(), image.height());
@@ -148,9 +155,10 @@ void rgb_split() {
         }
         
     }
-    split_rgb_image.save("output/pouet.png");
+    split_rgb_image.save("output/rgb_split.png");
 }
 
+// Done
 void light_up(){
     sil::Image image{"images/photo.jpg"};
     for ( glm::vec3 &pixel : image.pixels())
@@ -160,9 +168,10 @@ void light_up(){
         pixel.b = pixel.b + (30.0/255.0);
     }
     
-    image.save("output/pouet.png");
+    image.save("output/light_up.png");
 }
 
+// Done
 void light_down(){
     sil::Image image{"images/photo.jpg"};
     for ( glm::vec3 &pixel : image.pixels())
@@ -172,9 +181,10 @@ void light_down(){
         pixel.b = pixel.b - (30.0/255.0);
     }
     
-    image.save("output/pouet.png");
+    image.save("output/light_down.png");
 }
 
+// Disc
 void disc() {
     sil::Image image{500, 500};
     for (float i{0}; i < image.width(); i++)
@@ -192,9 +202,10 @@ void disc() {
         }
         
     }
-    image.save("output/pouet.png");
+    image.save("output/disc.png");
 }
 
+// Done
 void ring(int center_x, int center_y, int rayon, sil::Image& image) {
     for (float i{0}; i < image.width(); i++)
     {
@@ -213,6 +224,7 @@ void ring(int center_x, int center_y, int rayon, sil::Image& image) {
     }
 }
 
+// Done
 void animated_disc() {
     sil::Image image{500, 500};
     for (int k = 0; k < image.width(); k=k+10)
@@ -237,128 +249,14 @@ void animated_disc() {
             }
             
         }
-        image.save("output/pouet.png");
+        std::string chemin = "output/animation/";
+        std::string file_name = "animation.png";
+        std::string string_k = std::to_string(k);
+        image.save(chemin + string_k + file_name);
     }
 }
 
-void rosace() {
-    sil::Image image{500, 500};
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            if (pow(i-250, 2) + pow(j - 250, 2) < pow(100, 2) && pow(i-250, 2) + pow(j - 250, 2) > pow(95, 2))
-            {
-                glm::vec3 &pixel = image.pixel(i, j);
-                pixel.r = 1;
-                pixel.g = 1;
-                pixel.b = 1;
-            }
-            
-        }
-        
-    }
-    image.save("output/pouet.png");
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            if (pow(i-152, 2) + pow(j - 250, 2) < pow(100, 2) && pow(i - 152, 2) + pow(j - 250, 2) > pow(95, 2))
-            {
-                glm::vec3 &pixel = image.pixel(i, j);
-                pixel.r = 1;
-                pixel.g = 1;
-                pixel.b = 1;
-            }
-            
-        }
-        
-    }
-    image.save("output/pouet.png");
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            if (pow(i-348, 2) + pow(j - 250, 2) < pow(100, 2) && pow(i - 348, 2) + pow(j - 250, 2) > pow(95, 2))
-            {
-                glm::vec3 &pixel = image.pixel(i, j);
-                pixel.r = 1;
-                pixel.g = 1;
-                pixel.b = 1;
-            }
-            
-        }
-        
-    }
-    image.save("output/pouet.png");
-
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            if (pow(i-299, 2) + pow(j - 165, 2) < pow(100, 2) && pow(i - 299, 2) + pow(j - 165, 2) > pow(95, 2))
-            {
-                glm::vec3 &pixel = image.pixel(i, j);
-                pixel.r = 1;
-                pixel.g = 1;
-                pixel.b = 1;
-            }
-            
-        }
-        
-    }
-    image.save("output/pouet.png");
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            if (pow(i-299, 2) + pow(j - 335, 2) < pow(100, 2) && pow(i - 299, 2) + pow(j - 335, 2) > pow(95, 2))
-            {
-                glm::vec3 &pixel = image.pixel(i, j);
-                pixel.r = 1;
-                pixel.g = 1;
-                pixel.b = 1;
-            }
-            
-        }
-        
-    }
-    image.save("output/pouet.png");
-
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            if (pow(i-201, 2) + pow(j - 165, 2) < pow(100, 2) && pow(i - 200, 2) + pow(j - 165, 2) > pow(95, 2))
-            {
-                glm::vec3 &pixel = image.pixel(i, j);
-                pixel.r = 1;
-                pixel.g = 1;
-                pixel.b = 1;
-            }
-            
-        }
-        
-    }
-    image.save("output/pouet.png");
-    for (float i{0}; i < image.width(); i++)
-    {
-        for (float j{0}; j < image.height(); j++)
-        {
-            if (pow(i-201, 2) + pow(j - 335, 2) < pow(100, 2) && pow(i - 200, 2) + pow(j - 335, 2) > pow(95, 2))
-            {
-                glm::vec3 &pixel = image.pixel(i, j);
-                pixel.r = 1;
-                pixel.g = 1;
-                pixel.b = 1;
-            }
-            
-        }
-        
-    }
-    image.save("output/pouet.png");
-}
-
+// Done
 void polar_rosace() {
     sil::Image image{500, 500};
     int angle = 360 / 10;
@@ -369,9 +267,10 @@ void polar_rosace() {
         int y = sin(true_angle * (M_PI / 180 )) * 100 + 250;
         ring(x, y, 100, image);
     }
-    image.save("output/pouet.png");
+    image.save("output/rosace.png");
 }
 
+// Done
 void mosaimac() {
     sil::Image image{"images/logo.png"};
     sil::Image mosaic_image = sil::Image(image.width() * 5, image.height() * 5);
@@ -390,7 +289,7 @@ void mosaimac() {
         }
         
     }
-    mosaic_image.save("output/pouet.png");
+    mosaic_image.save("output/mosaic.png");
 }
 
 sil::Image mirror(sil::Image& image){
@@ -420,6 +319,7 @@ sil::Image upside_down(sil::Image& image) {
     return upside_down_image;
 }
 
+// Done
 void mirrored_mosaimac() {
     sil::Image image{"images/logo.png"};
     sil::Image mirror_image = mirror(image);
@@ -455,16 +355,15 @@ void mirrored_mosaimac() {
             }   
         }
     }
-    mosaic_image.save("output/pouet.png");
+    mosaic_image.save("output/mirror_mosaic.png");
 }
 
+// Done
 void glitch() {
     sil::Image image{"images/logo.png"};
     int number = rand() % 30 + 15;
-    std::cout << number << std::endl;
     for (int i = 0; i < number; i++)
     {
-        std::cout << i << std::endl;
         int size_x = rand() % 30 + 5;
         int size_y = rand() % 30 + 5;
 
@@ -483,9 +382,10 @@ void glitch() {
             }
         }
     }
-    image.save("output/pouet.png");
+    image.save("output/glitch.png");
 }
 
+// Done
 void pixel_sort() {
     sil::Image image{"images/logo.png"};
     int number = 300;
@@ -513,9 +413,10 @@ void pixel_sort() {
         }
         
     }
-    image.save("output/pouet.png");
+    image.save("output/pixel_sort.png");
 }
 
+// Done
 void mandelbrot(){
     sil::Image image{500, 500};
     for (float i{0}; i < image.width(); i++)        
@@ -543,7 +444,7 @@ void mandelbrot(){
 
         }           
     }
-    image.save("output/pouet.png");
+    image.save("output/mandelbrot.png");
 }
 
 glm::vec3 to_linear(glm::vec3 color) {
@@ -634,6 +535,7 @@ glm::vec3 linear_to_rgb(glm::vec3 color){
     return color;
 }
 
+// Done
 void color_buzz_cut() {
     sil::Image image{"images/logo.png"};
 
@@ -654,9 +556,10 @@ void color_buzz_cut() {
     }
     
     
-    image.save("output/pouet.png");
+    image.save("output/color_buzz_cut.png");
 }
 
+// Done
 sil::Image basic_convolution(int blur_size) {
     sil::Image image{"images/logo.png"};
     sil::Image blurred_image = { image.width(), image.height()};
@@ -697,14 +600,15 @@ sil::Image basic_convolution(int blur_size) {
     return blurred_image;
 }
 
+// Done
 void matrix_convolution() {
     sil::Image image{"images/logo.png"};
     sil::Image sharpened_image = { image.width(), image.height()};
     int blur_size = 1;
     std::vector<int> matrix = {
-        -2, -1, 0,
-        -1, 1, 1,
-        0, 1, 2};
+         -1, -1,  -1,
+         -1,  8, -1,
+         -1,  -1,  -1};
     for (float x{0}; x < image.width(); x++)        
     {
         for (float y{0}; y < image.height(); y++)
@@ -736,10 +640,10 @@ void matrix_convolution() {
             sharpened_image.pixel(x, y) = newColor;
         }
     }
-    sharpened_image.save("output/pouet.png");
+    sharpened_image.save("output/matrix_outline.png");
 }
 
-
+// Done
 sil::Image box_blur_convolution(int blur_size) {
     sil::Image image{"images/logo.png"};
     sil::Image tmp_image = { image.width(), image.height()};
@@ -803,6 +707,7 @@ sil::Image box_blur_convolution(int blur_size) {
     return final_image;
 }
 
+// Done
 void gauss_diff(){
     sil::Image image{"images/logo.png"};
     sil::Image image1 = basic_convolution(1);
@@ -815,9 +720,10 @@ void gauss_diff(){
             image.pixel(x, y) = image1.pixel(x, y) - image2.pixel(x, y);
         }
     }
-    image.save("output/pouet.png");
+    image.save("output/gauss_diff.png");
 }
 
+// Done
 void normalize() {
     sil::Image image{"images/photo_faible_contraste.jpg"};
     glm::vec3 brightest = image.pixel(0,0);
@@ -843,9 +749,10 @@ void normalize() {
             
         }
     }
-    image.save("output/pouet.png");
+    image.save("output/normalize.png");
 }
 
+// Done
 void dithering() {
     sil::Image image{"images/photo.jpg"};
     const int bayer_n = 4;
@@ -871,9 +778,10 @@ void dithering() {
             
         }
     }
-    image.save("output/pouet.png");
+    image.save("output/dithering.png");
 }
 
+// Done
 void k_means(int k){
     sil::Image image{"images/photo.jpg"};
     sil::Image k_proximity = {image.width(), image.height()};
@@ -937,7 +845,7 @@ void k_means(int k){
             image.pixel(x, y) = k_proximity.pixel(x, y);                
         }
     }
-    image.save("output/pouet.png");
+    image.save("output/k_means.png");
 }
 
 double standardDeviation(const std::vector<glm::vec3>& arr)
@@ -968,6 +876,7 @@ double standardDeviation(const std::vector<glm::vec3>& arr)
     return sqrt(standardDeviation / size);
 }
 
+// Done
 void kuwahara(int kuwahara_size) {
     sil::Image image{"images/photo.jpg"};
     sil::Image kuwahara_image = {image.width(), image.height()};
@@ -1052,7 +961,7 @@ void kuwahara(int kuwahara_size) {
             }
         }
     }
-    kuwahara_image.save("output/pouet.png");
+    kuwahara_image.save("output/kuwahara.png");
 }
 
 glm::vec2 rotated(glm::vec2 point, glm::vec2 center_of_rotation, float angle)
@@ -1060,6 +969,7 @@ glm::vec2 rotated(glm::vec2 point, glm::vec2 center_of_rotation, float angle)
     return glm::vec2{glm::rotate(glm::mat3{1.f}, angle) * glm::vec3{point - center_of_rotation, 0.f}} + center_of_rotation;
 }
 
+// Done
 void vortex() {
     sil::Image image{"images/logo.png"};
     sil::Image vortexed_image = {image.width(), image.height()};
@@ -1074,11 +984,11 @@ void vortex() {
             }
         }
     }
-    vortexed_image.save("output/pouet.png");
+    vortexed_image.save("output/vortex.png");
 }
 
 
 int main()
 {
-    vortex();
+    matrix_convolution();
 } 
