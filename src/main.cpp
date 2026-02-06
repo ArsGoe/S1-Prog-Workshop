@@ -990,5 +990,7 @@ void vortex() {
 
 int main()
 {
-    matrix_convolution();
+    sil::Image image{"images/logo.png"};
+    sil::Image image2 = mirror(image);
+    image2.save("output/mirror.png");
 } 
